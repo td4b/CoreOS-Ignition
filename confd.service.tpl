@@ -1,5 +1,5 @@
 [Unit]
-Description=awscli
+Description=confd service
 After=docker.service
 After=network.target
 Requires=docker.service
