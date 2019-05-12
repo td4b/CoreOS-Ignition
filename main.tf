@@ -11,14 +11,6 @@ provider "aws"{
   region = "us-west-1"
 }
 
-variable "docker_username" {
-  type = "string"
-}
-
-variable "docker_password" {
-  type = "string"
-}
-
 variable "ami" {
   default = "ami-007fd5d3faa277be8" # CoreOS
 }
@@ -98,12 +90,6 @@ resource "aws_iam_instance_profile" "ssm-instance-profile" {
 // secrets
 //
 
-resource "aws_ssm_parameter" "secretkey" {
-  name  = "/dev/secretkey"
-  type  = "SecureString"
-  value = "supersecretkey"
-}
-
 //
 // confd service container
 //
@@ -128,6 +114,7 @@ data "template_file" "config_toml" {
 data "ignition_file" "configtoml" {
     filesystem = "root"
     path = "/etc/confd/conf.d/myconfig.toml"
+    mode = "0755"
     content {
         content = "${data.template_file.config_toml.rendered}"
 }
@@ -140,34 +127,38 @@ data "template_file" "config_file" {
 data "ignition_file" "configfile" {
     filesystem = "root"
     path = "/etc/confd/templates/myconfig.conf.tmpl"
+    mode = "0755"
     content {
         content = "${data.template_file.config_file.rendered}"
 }
 }
 
 data "template_file" "login" {
-  template = "${file("login.service")}"
+  template = "${file("login.conf.tmpl")}"
   vars {
-    docker_username = "${var.docker_username}"
-    docker_pw = "${var.docker_password}"
+    loc = "/dev/dockerlogin"
   }
 }
 
-data "ignition_systemd_unit" "login" {
-  name = "login.service"
-  content = "${data.template_file.login.rendered}"
+data "ignition_file" "login" {
+    filesystem = "root"
+    path = "/etc/confd/templates/login.conf.tmpl"
+    mode = "0755"
+    content {
+        content = "${data.template_file.login.rendered}"
+}
 }
 
 data "ignition_config" "ignition" {
 
   systemd = [
-    "${data.ignition_systemd_unit.login.id}",
     "${data.ignition_systemd_unit.confd_service.id}",
   ]
 
   files = [
       "${data.ignition_file.configtoml.id}",
       "${data.ignition_file.configfile.id}",
+      "${data.ignition_file.login.id}",
   ]
 }
 

@@ -1,6 +1,6 @@
 [template]
-src = "myconfig.conf.tmpl"
-dest = "/tmp/myconfig.conf"
+src = "login.conf.tmpl"
+dest = "/root/.docker/config.json"
 keys = [
-    "/dev/secretkey",
+    "/dev/dockerlogin",
 ]
