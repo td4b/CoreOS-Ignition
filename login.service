@@ -1,0 +1,9 @@
+[Unit]
+Description=Docker Login
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker login --username ${docker_username} --password ${docker_pw}
+
+[Install]
+WantedBy=multi-user.target

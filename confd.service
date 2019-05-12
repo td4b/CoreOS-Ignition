@@ -1,0 +1,17 @@
+
+[Unit]
+Description=confd
+After=confd.service
+Requires=coreos-metadata.service
+After=network.target
+After=coreos-metadata.service
+ConditionPathExists=!/opt/bin/confd
+
+[Service]
+Type=oneshot
+ExecStart=${confd_install}
+RemainAfterExit=no
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
