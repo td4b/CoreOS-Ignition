@@ -11,6 +11,10 @@ provider "aws"{
   region = "us-west-1"
 }
 
+variable "docker_username" {
+  type = "string"
+}
+
 variable "docker_password" {
   type = "string"
 }
@@ -144,6 +148,7 @@ data "ignition_file" "configfile" {
 data "template_file" "login" {
   template = "${file("login.service")}"
   vars {
+    docker_username = "${var.docker_username}"
     docker_pw = "${var.docker_password}"
   }
 }
