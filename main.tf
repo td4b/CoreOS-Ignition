@@ -124,15 +124,6 @@ data "template_file" "config_file" {
   template = "${file("myconfig.conf.tmpl")}"
 }
 
-data "ignition_file" "configfile" {
-    filesystem = "root"
-    path = "/etc/confd/templates/myconfig.conf.tmpl"
-    mode = "0755"
-    content {
-        content = "${data.template_file.config_file.rendered}"
-}
-}
-
 data "template_file" "login" {
   template = "${file("login.conf.tmpl")}"
   vars {
@@ -157,7 +148,6 @@ data "ignition_config" "ignition" {
 
   files = [
       "${data.ignition_file.configtoml.id}",
-      "${data.ignition_file.configfile.id}",
       "${data.ignition_file.login.id}",
   ]
 }
