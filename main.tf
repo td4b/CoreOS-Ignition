@@ -176,7 +176,7 @@ resource "aws_security_group" "allow_ssh" {
     to_port     = 8080
     protocol    = "TCP"
     # Opens port 80 for the honey pot.
-    cidr_blocks = ["24.130.143.12/32"]
+    cidr_blocks = ["192.168.1.1/32"]
   }
 
   egress {
